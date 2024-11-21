@@ -29,12 +29,11 @@ export function Nav() {
           <li className="text-md text-gray-800">
             <Link href="#">Categories</Link>
           </li>
-        </ul>
-        <ul className="flex flex-col lg:flex-row lg:items-center gap-4">
           <li className="text-md text-gray-800">
             <Link href="#">Enquires</Link>
           </li>
         </ul>
+        {/* <ul className="flex flex-col lg:flex-row lg:items-center gap-4"></ul> */}
         <ul className="flex flex-row items-center gap-4">
           <li>
             <Link
@@ -62,21 +61,22 @@ export function Nav() {
       {/* mobile nav links */}
       <div
         style={{ display: menuClicked ? "flex" : "none" }}
-        className="w-full min-h-[380vh] absolute top-[62px] bg-white px-2 md:px-8"
+        className="w-full min-h-[380px] absolute top-[62px] bg-white px-2 md:px-8"
       >
         <ul className="w-full flex flex-col justify-start items-end gap-6 py-8">
-          <li className="text-md text-gray-800">
+          <li className="text-2xl text-gray-800">
             <Link href="#">Businesses</Link>
           </li>
-          <li className="text-md text-gray-800">
+          <li className="text-2xl text-gray-800">
             <Link href="#">Categories</Link>
           </li>
-        </ul>
-        <ul className="flex flex-col lg:flex-row lg:items-center gap-4">
-          <li className="text-md text-gray-800">
+          <li className="text-2xl text-gray-800">
             <Link href="#">Enquires</Link>
           </li>
         </ul>
+        {/* <ul className="flex flex-col lg:flex-row lg:items-center gap-4">
+          
+        </ul> */}
       </div>
     </>
   );

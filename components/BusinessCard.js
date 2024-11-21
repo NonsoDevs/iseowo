@@ -6,7 +6,7 @@ export function BusinessCard() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex gap-2">
-        <Link href="">
+        <Link href="#">
           <Image
             width={40}
             height={40}
@@ -28,18 +28,18 @@ export function BusinessCard() {
         formula
       </p>
 
-      <blockqoute className="grid grid-cols-2 border border-lime-400 rounded-md p-2">
+      <blockquote className="grid grid-cols-2 border border-lime-400 rounded-md p-2">
         <p className="text-sm text-lime-600 border-r border-lime-400">
           Listed in: Water Production
         </p>
         <Link
           href="#"
-          className="flex justify-end items-center gap-2 text-lime-600"
+          className="flex justify-end items-center gap-2 text-lime-600 text-sm"
         >
           <span>View Business</span>
           <FaChevronRight />
         </Link>
-      </blockqoute>
+      </blockquote>
     </div>
   );
 }
