@@ -39,12 +39,12 @@ export default function Page() {
   });
 
   return (
-    <main className="flex justify-center px-2 md:px-8 lg:px-16 py-4 md:py-6 lg:py-8">
+    <main className="flex justify-center px-2 md:px-8 lg:px-16 py-4 md:py-6 lg:py-8 mb-3">
       <div className="w-full md:w-[420px] rounded-md bg-white shadow-md p-4">
         <hi className="text-2xl font-thin mb-6">Add a business</hi>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
+          <div className="mb-7">
             <TextField
               type="text"
               id="business_name"
@@ -95,7 +95,7 @@ export default function Page() {
               >
                 <option value="none">choose sub-category</option>
                 {businessCategories
-                  .filter((cat) => cat.category == values.category)[0]
+                  .filter((cat) => cat.category == values.sub_category)[0]
                   ?.subCategories.map((subCat) => (
                     <option value={subCat} key={subCat}>
                       {subCat}
@@ -107,6 +107,54 @@ export default function Page() {
                   {errors.sub_category}
                 </span>
               ) : null}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="mb-3">
+                <TextField
+                  select
+                  SelectProps={{ native: true }}
+                  id="state"
+                  label="state"
+                  variant="outlined"
+                  className="w-full"
+                  value={values.ngstates}
+                  onChange={handleChange}
+                >
+                  <option value="none">choose state</option>
+                  {ngstates.map((sta) => (
+                    <option value={sta.label} key={sta.label}>
+                      {sta.label}
+                    </option>
+                  ))}
+                </TextField>
+                {touched.state && errors.state ? (
+                  <span className="text-xs text-red-400">{errors.state}</span>
+                ) : null}
+              </div>
+              <div className="mb-3">
+                <TextField
+                  select
+                  SelectProps={{ native: true }}
+                  id="lga"
+                  label="lga"
+                  variant="outlined"
+                  className="w-full"
+                  value={values.lga}
+                  onChange={handleChange}
+                >
+                  <option value="none">choose lga</option>
+                  {ngstates
+                    .filter((item) => item.label == values.state)[0]
+                    ?.lga.map((lga) => (
+                      <option value={lga} key={lga}>
+                        {lga}
+                      </option>
+                    ))}
+                </TextField>
+                {touched.lga && errors.lga ? (
+                  <span className="text-xs text-red-400">{errors.lga}</span>
+                ) : null}
+              </div>
             </div>
           </div>
           <button
