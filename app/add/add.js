@@ -44,7 +44,7 @@ export default function Add() {
         <hi className="text-2xl font-thin mb-6">Add a business</hi>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-7">
+          <div className="mb-3">
             <TextField
               type="text"
               id="business_name"
@@ -152,6 +152,36 @@ export default function Add() {
                 ) : null}
               </div>
             </div>
+          </div>
+          <div className="mb-3">
+            <TextField
+              multiline
+              row={3}
+              type="text"
+              id="business_description"
+              label="business description"
+              variant="outlined"
+              className="w-full"
+              onChange={handleChange}
+            />
+            {touched.business_description && errors.business_description ? (
+              <span className="text-xs text-red-400">
+                {errors.business_description}
+              </span>
+            ) : null}
+          </div>
+          <div className="mb-3">
+            <TextField
+              type="text"
+              id="website"
+              label="website"
+              variant="outlined"
+              className="w-full"
+              onChange={handleChange}
+            />
+            {touched.website && errors.website ? (
+              <span className="text-xs text-red-400">{errors.website}</span>
+            ) : null}
           </div>
           <button
             type="submit"
