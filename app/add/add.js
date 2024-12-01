@@ -39,8 +39,8 @@ export default function Add() {
   });
 
   return (
-    <main className="flex justify-center px-2 md:px-8 lg:px-16 py-4 md:py-6 lg:py-8 mb-3">
-      <div className="w-full md:w-[420px] rounded-md bg-white shadow-md p-4">
+    <main className="flex justify-center px-2 md:px-8 lg:px-16 py-4 md:py-6 lg:py-8">
+      <div className="w-full md:w-[620px] rounded-md bg-white shadow-md p-4">
         <hi className="text-2xl font-thin mb-6">Add a business</hi>
 
         <form onSubmit={handleSubmit}>
@@ -48,7 +48,7 @@ export default function Add() {
             <TextField
               type="text"
               id="business_name"
-              label="business name"
+              label="Business name"
               variant="outlined"
               className="w-full"
               onChange={handleChange}
@@ -70,7 +70,7 @@ export default function Add() {
                 value={values.category}
                 onChange={handleChange}
               >
-                <option value="none">choose category</option>
+                <option value="none">Choose Category</option>
                 {businessCategories.map((cat) => (
                   <option value={cat.category} key={cat.category}>
                     {cat.category}
@@ -91,7 +91,7 @@ export default function Add() {
                 value={values.sub_category}
                 onChange={handleChange}
               >
-                <option value="none">choose sub-category</option>
+                <option value="none">Choose sub-category</option>
                 {businessCategories
                   .filter((cat) => cat.category == values.category)[0]
                   ?.subCategories.map((subCat) => (
@@ -117,7 +117,7 @@ export default function Add() {
                   value={values.state}
                   onChange={handleChange}
                 >
-                  <option value="none">choose state</option>
+                  <option value="none">Choose State</option>
                   {ngstates.map((sta) => (
                     <option value={sta.label} key={sta.label}>
                       {sta.label}
@@ -138,7 +138,7 @@ export default function Add() {
                   value={values.lga}
                   onChange={handleChange}
                 >
-                  <option value="none">choose lga</option>
+                  <option value="none">Choose LGA</option>
                   {ngstates
                     .filter((item) => item.label == values.state)[0]
                     ?.lga.map((lga) => (
@@ -159,7 +159,7 @@ export default function Add() {
               row={3}
               type="text"
               id="business_description"
-              label="business description"
+              label="Business description"
               variant="outlined"
               className="w-full"
               onChange={handleChange}
@@ -174,7 +174,7 @@ export default function Add() {
             <TextField
               type="text"
               id="website"
-              label="website"
+              label="Website"
               variant="outlined"
               className="w-full"
               onChange={handleChange}
