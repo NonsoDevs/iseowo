@@ -1,10 +1,20 @@
 "use client";
 import { useState } from "react";
-import { TextField, Button, CircularProgress } from "@mui/material";
+import Link from "next/link";
+import {
+  TextField,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { businessCategories } from "@/utils/business_categories";
 import { ngstates } from "@/utils/ng_states";
+import { IoIosCheckmarkCircle } from "react-icons/io";
+import { db } from "@/config/firebase.config";
+import { addDoc, collection } from "firebase/firestore";
 
 const rules = yup.object().shape({
   business_name: yup
@@ -19,8 +29,12 @@ const rules = yup.object().shape({
   website: yup.string().max(60),
 });
 
-export default function Add() {
+export default function Add({ userID }) {
   const [startProgress, setStartProgress] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const { handleSubmit, values, handleChange, touched, errors } = useFormik({
     initialValues: {
@@ -32,77 +46,55 @@ export default function Add() {
       business_description: "",
       website: "",
     },
-    onSubmit: () => {
-      console.log(values);
+    onSubmit: async () => {
+      // Start loading indicator
+      setStartProgress(true);
+
+      // Send records to db
+      await addDoc(collection(db, "directories"), {
+        businessName: values.business_name,
+        category: values.category,
+        subCategory: values.sub_category,
+        state: values.state,
+        lga: values.lga,
+        description: values.business_description,
+        url: values.website,
+        createdBy: userID,
+        createdAt: new Date().getTime(),
+      })
+        .then(() => {
+          setStartProgress(false); // Stop loading indicator
+          handleClickOpen(); // Open success notification
+        })
+
+        .catch((e) => {
+          console.error(e);
+          setStartProgress(false); // Stop loading indicatoer
+          alert("An error has occured"); // Open error message
+        });
     },
     validationSchema: rules,
   });
 
   return (
-    <main className="flex justify-center px-2 md:px-8 lg:px-16 py-4 md:py-6 lg:py-8">
-      <div className="w-full md:w-[620px] rounded-md bg-white shadow-md p-4">
-        <hi className="text-2xl font-thin mb-6">Add a business</hi>
+    <>
+      <main className="flex justify-center px-2 md:px-8 lg:px-16 py-4 md:py-6 lg:py-8">
+        <div className="w-full md:w-[620px] rounded-md bg-white shadow-md p-4">
+          <hi className="text-2xl font-thin mb-6">Add a business</hi>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <TextField
-              type="text"
-              id="business_name"
-              label="Business name"
-              variant="outlined"
-              className="w-full"
-              onChange={handleChange}
-            />
-            {touched.business_name && errors.business_name ? (
-              <span className="text-xs text-red-400">
-                {errors.business_name}
-              </span>
-            ) : null}
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <TextField
-                select
-                SelectProps={{ native: true }}
-                id="category"
+                type="text"
+                id="business_name"
+                label="Business name"
                 variant="outlined"
                 className="w-full"
-                value={values.category}
                 onChange={handleChange}
-              >
-                <option value="none">Choose Category</option>
-                {businessCategories.map((cat) => (
-                  <option value={cat.category} key={cat.category}>
-                    {cat.category}
-                  </option>
-                ))}
-              </TextField>
-              {touched.category && errors.category ? (
-                <span className="text-xs text-red-400">{errors.category}</span>
-              ) : null}
-            </div>
-            <div className="mb-3">
-              <TextField
-                select
-                SelectProps={{ native: true }}
-                id="sub_category"
-                variant="outlined"
-                className="w-full"
-                value={values.sub_category}
-                onChange={handleChange}
-              >
-                <option value="none">Choose sub-category</option>
-                {businessCategories
-                  .filter((cat) => cat.category == values.category)[0]
-                  ?.subCategories.map((subCat) => (
-                    <option value={subCat} key={subCat}>
-                      {subCat}
-                    </option>
-                  ))}
-              </TextField>
-              {touched.sub_category && errors.sub_category ? (
+              />
+              {touched.business_name && errors.business_name ? (
                 <span className="text-xs text-red-400">
-                  {errors.sub_category}
+                  {errors.business_name}
                 </span>
               ) : null}
             </div>
@@ -111,91 +103,173 @@ export default function Add() {
                 <TextField
                   select
                   SelectProps={{ native: true }}
-                  id="state"
+                  id="category"
                   variant="outlined"
                   className="w-full"
-                  value={values.state}
+                  value={values.category}
                   onChange={handleChange}
                 >
-                  <option value="none">Choose State</option>
-                  {ngstates.map((sta) => (
-                    <option value={sta.label} key={sta.label}>
-                      {sta.label}
+                  <option value="none">Choose Category</option>
+                  {businessCategories.map((cat) => (
+                    <option value={cat.category} key={cat.category}>
+                      {cat.category}
                     </option>
                   ))}
                 </TextField>
-                {touched.state && errors.state ? (
-                  <span className="text-xs text-red-400">{errors.state}</span>
+                {touched.category && errors.category ? (
+                  <span className="text-xs text-red-400">
+                    {errors.category}
+                  </span>
                 ) : null}
               </div>
               <div className="mb-3">
                 <TextField
                   select
                   SelectProps={{ native: true }}
-                  id="lga"
+                  id="sub_category"
                   variant="outlined"
                   className="w-full"
-                  value={values.lga}
+                  value={values.sub_category}
                   onChange={handleChange}
                 >
-                  <option value="none">Choose LGA</option>
-                  {ngstates
-                    .filter((item) => item.label == values.state)[0]
-                    ?.lga.map((lga) => (
-                      <option value={lga} key={lga}>
-                        {lga}
+                  <option value="none">Choose sub-category</option>
+                  {businessCategories
+                    .filter((cat) => cat.category == values.category)[0]
+                    ?.subCategories.map((subCat) => (
+                      <option value={subCat} key={subCat}>
+                        {subCat}
                       </option>
                     ))}
                 </TextField>
-                {touched.lga && errors.lga ? (
-                  <span className="text-xs text-red-400">{errors.lga}</span>
+                {touched.sub_category && errors.sub_category ? (
+                  <span className="text-xs text-red-400">
+                    {errors.sub_category}
+                  </span>
                 ) : null}
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="mb-3">
+                  <TextField
+                    select
+                    SelectProps={{ native: true }}
+                    id="state"
+                    variant="outlined"
+                    className="w-full"
+                    value={values.state}
+                    onChange={handleChange}
+                  >
+                    <option value="none">Choose State</option>
+                    {ngstates.map((sta) => (
+                      <option value={sta.label} key={sta.label}>
+                        {sta.label}
+                      </option>
+                    ))}
+                  </TextField>
+                  {touched.state && errors.state ? (
+                    <span className="text-xs text-red-400">{errors.state}</span>
+                  ) : null}
+                </div>
+                <div className="mb-3">
+                  <TextField
+                    select
+                    SelectProps={{ native: true }}
+                    id="lga"
+                    variant="outlined"
+                    className="w-full"
+                    value={values.lga}
+                    onChange={handleChange}
+                  >
+                    <option value="none">Choose LGA</option>
+                    {ngstates
+                      .filter((item) => item.label == values.state)[0]
+                      ?.lga.map((lga) => (
+                        <option value={lga} key={lga}>
+                          {lga}
+                        </option>
+                      ))}
+                  </TextField>
+                  {touched.lga && errors.lga ? (
+                    <span className="text-xs text-red-400">{errors.lga}</span>
+                  ) : null}
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="mb-3">
-            <TextField
-              multiline
-              row={3}
-              type="text"
-              id="business_description"
-              label="Business description"
-              variant="outlined"
-              className="w-full"
-              onChange={handleChange}
-            />
-            {touched.business_description && errors.business_description ? (
-              <span className="text-xs text-red-400">
-                {errors.business_description}
-              </span>
-            ) : null}
-          </div>
-          <div className="mb-3">
-            <TextField
-              type="text"
-              id="website"
-              label="Website"
-              variant="outlined"
-              className="w-full"
-              onChange={handleChange}
-            />
-            {touched.website && errors.website ? (
-              <span className="text-xs text-red-400">{errors.website}</span>
-            ) : null}
-          </div>
-          <button
-            type="submit"
-            className="bg-lime-700 text-white px-3 py-2 uppercase rounded-lg"
+            <div className="mb-3">
+              <TextField
+                multiline
+                row={3}
+                type="text"
+                id="business_description"
+                label="Business description"
+                variant="outlined"
+                className="w-full"
+                onChange={handleChange}
+              />
+              {touched.business_description && errors.business_description ? (
+                <span className="text-xs text-red-400">
+                  {errors.business_description}
+                </span>
+              ) : null}
+            </div>
+            <div className="mb-3">
+              <TextField
+                type="text"
+                id="website"
+                label="Website"
+                variant="outlined"
+                className="w-full"
+                onChange={handleChange}
+              />
+              {touched.website && errors.website ? (
+                <span className="text-xs text-red-400">{errors.website}</span>
+              ) : null}
+            </div>
+            <button
+              type="submit"
+              className="bg-lime-700 text-white px-3 py-2 uppercase rounded-sm"
+            >
+              Submit Business
+            </button>
+          </form>
+          {startProgress ? (
+            <div className="absolute top-0 left-0 z-10 w-full h-screen flex justify-center items-center bg-lime-200/50">
+              <CircularProgress style={{ color: "forestgreen" }} />
+            </div>
+          ) : null}
+        </div>
+      </main>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <p className="flex justify-center items-center gap-2 mb-4">
+            <IoIosCheckmarkCircle className="text-xl text-green-500" />
+            <span className="text-green-600">Success</span>
+          </p>
+          <p className="text-gray-700">
+            Your business hava been successfully listed on the NG Business
+            Directory
+          </p>
+        </DialogContent>
+        <DialogActions>
+          <Link
+            href="/"
+            className="h-8 flex justify-center items-center bg-lime-700 text-white rounded-sm px-2"
           >
-            Submit Business
-          </button>
-        </form>
-        {startProgress ? (
-          <div className="absolute top-0 left-0 z-10 w-full h-screen flex justify-center items-center bg-lime-200/50">
-            <CircularProgress style={{ color: "forestgreen" }} />
-          </div>
-        ) : null}
-      </div>
-    </main>
+            Retrun to Home
+          </Link>
+          <Link
+            href="/my"
+            className="h-8 flex justify-center items-center bg-lime-700 text-white rounded-sm px-2"
+          >
+            Return to Dashboard
+          </Link>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
